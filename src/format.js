@@ -1,3 +1,8 @@
+import chalk from "chalk";
+
+export const currency = process.env.CURRENCY || "EUR";
+
 export default function formatExpense(expense) {
-    return `${expense.id}. ${expense.description}: ${expense.amount}`;
+    const  {id, description, amount} = expense;
+    return `${id}. ${description}: ${chalk.green(amount)} ${currency}`;
 }

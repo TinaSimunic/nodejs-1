@@ -1,4 +1,5 @@
-import formatExpense from "./format.js";
+import formatExpense, { currency } from "./format.js";
+import { loadExpenses, saveExpenses } from "./storage.js";
 
 const APP_Name = "Troškovnik";
 console.log(`== ${APP_Name} ==`);
@@ -13,10 +14,14 @@ const arg2 = args[2];
 const [command, arg1, arg2] = process.argv.slice(2); //["add", "Kruh", 3.2] - destrukturiranje polja
 // console.log("Naredba i argumenti", command, arg1, arg2);
 
-const expenses = [
-    { id: 1, description: "Kruh", amount: 2.5 }, // index 0
-    { id: 2, description: "Kino", amount: 12 } //index 1
-];
+let expenses;
+try {
+    expenses = loadExpenses();
+} catch (error) {
+    console.error(`Datoteka expenses.json nije ispravna: ${error.message}`);
+    process.exit(1);
+}
+
 // console.log("Troškovi trenutni", expenses);
 
 switch (command) {
@@ -31,6 +36,7 @@ switch (command) {
             newId = expenses[expenses.length - 1].id + 1;
         }
         expenses.push({ id: newId, description: arg1, amount: amount });
+        saveExpenses(expenses); // spremamo troškove
         console.log(`Dodano: ${arg1} (broj ${newId})`);
         break;
 
@@ -53,7 +59,7 @@ switch (command) {
         for(const expense of expenses) {
             total = total + expense.amount;
         }
-        console.log(`Ukupno: ${total}`);
+        console.log(`Ukupno: ${total} ${currency}`);
         break;
 
     default:
